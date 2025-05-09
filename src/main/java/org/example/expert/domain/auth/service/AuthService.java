@@ -25,29 +25,30 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public SignupResponse signup(SignupRequest signupRequest) {
+    public SignupResponse signup(SignupRequest signupRequest) { //회원가입
 
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new InvalidRequestException("이미 존재하는 이메일입니다.");
+        if (userRepository.existsByEmail(signupRequest.getEmail())) { //이메일 존재여부확인
+            throw new InvalidRequestException("이미 존재하는 이메일입니다."); // 존재하면 예외발생
         }
 
-        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword()); //비밀번호 암호화
 
-        UserRole userRole = UserRole.of(signupRequest.getUserRole());
+        UserRole userRole = UserRole.of(signupRequest.getUserRole()); //유저권한
 
-        User newUser = new User(
+        User newUser = new User(  //유저생성
                 signupRequest.getEmail(),
                 encodedPassword,
-                userRole
+                userRole,
+                signupRequest.getNickname()
         );
-        User savedUser = userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);//저장
 
-        String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail(), userRole);
+        String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getEmail(), userRole, savedUser.getNickname());
 
         return new SignupResponse(bearerToken);
     }
 
-    public SigninResponse signin(SigninRequest signinRequest) {
+    public SigninResponse signin(SigninRequest signinRequest) { //로그인
         User user = userRepository.findByEmail(signinRequest.getEmail()).orElseThrow(
                 () -> new InvalidRequestException("가입되지 않은 유저입니다."));
 
@@ -56,7 +57,7 @@ public class AuthService {
             throw new AuthException("잘못된 비밀번호입니다.");
         }
 
-        String bearerToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole());
+        String bearerToken = jwtUtil.createToken(user.getId(), user.getEmail(), user.getUserRole(),user.getNickname());
 
         return new SigninResponse(bearerToken);
     }

@@ -60,3 +60,4 @@ public class WeatherClient {
         return LocalDate.now().format(formatter);
     }
 }
+    
