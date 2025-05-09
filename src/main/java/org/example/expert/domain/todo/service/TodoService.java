@@ -54,7 +54,7 @@ public class TodoService {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         if (weather == null && startDate == null && endDate == null) {//전부 입력받지 않았을때
-            Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+            Page<Todo> todos = todoRepository.findAllTodos(pageable);
             return todos.map(TodoResponse::from);
 
         } else if (weather != null && startDate == null && endDate == null) { //날씨만 입력되었을 때
