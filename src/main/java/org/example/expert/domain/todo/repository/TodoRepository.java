@@ -21,7 +21,8 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     Optional<Todo> findByIdWithUser(@Param("todoId") Long todoId);
 
     @Query("SELECT t FROM Todo t WHERE t.weather=:weather ORDER BY t.modifiedAt DESC")
-    Page<Todo> findAllByWeather(@Param("weather")String weather, Pageable pageable);
+    Page<Todo> findAllByWeather(@Param("weather")String weather,
+                                Pageable pageable);
 
     @Query("SELECT t FROM Todo t WHERE t.modifiedAt BETWEEN :startDate AND :endDate ORDER BY t.modifiedAt DESC ")
     Page<Todo> findAllByDate(@Param("startDate")LocalDateTime startDate,
